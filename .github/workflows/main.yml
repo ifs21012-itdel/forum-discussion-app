@@ -31,20 +31,15 @@ jobs:
       run: npm run lint
 
     - name: Run tests (Unit, Integration, E2E)
-      run: npm run ci:test
+      run: npm run ci:test # Ini akan menjalankan 'npm test && npm run e2e'
+                          # dan 'npm run e2e' sekarang memanggil 'start:ci-e2e'
       env:
         CYPRESS_VALID_EMAIL: ${{ secrets.CYPRESS_TEST_EMAIL }}
         CYPRESS_VALID_PASSWORD: ${{ secrets.CYPRESS_TEST_PASSWORD }}
-        # Tingkatkan timeout untuk start-server-and-test (wait-on) menjadi 5 menit (300000 ms)
-        # Defaultnya mungkin terlalu pendek untuk lingkungan CI.
-        WAIT_ON_TIMEOUT: 300000
-        # Pastikan variabel ini tidak menyebabkan masalah dengan CRA build di CI untuk tes
-        CI: true # Beberapa skrip CRA mungkin memerlukan ini di CI, tapi bisa juga menyebabkan warning.
-                # Jika 'npm run start' dalam 'npm run e2e' bermasalah karena CI=true,
-                # Anda mungkin perlu cara lain untuk men-set timeout atau men-override 'CI' khusus untuk 'npm start'.
-                # Namun, start-server-and-test biasanya tidak terpengaruh oleh CI=true untuk servernya.
+        WAIT_ON_TIMEOUT: 300000 # Tetap pertahankan timeout yang panjang
+        CI: true # Untuk npm test dan keseluruhan step, tapi start server akan CI=false
 
     - name: Build application (opsional, untuk verifikasi build)
       run: npm run build
       env:
-        CI: false # Seringkali diperlukan untuk build CRA di CI agar warning tidak dianggap error
+        CI: false
