@@ -30,13 +30,27 @@ jobs:
     - name: Run linters
       run: npm run lint
 
-    - name: Run tests (Unit, Integration, E2E)
-      run: npm run ci:test
+    - name: Run Unit and Integration Tests
+      run: npm test
+
+    - name: Run E2E Tests
       env:
         CYPRESS_VALID_EMAIL: ${{ secrets.CYPRESS_TEST_EMAIL }}
         CYPRESS_VALID_PASSWORD: ${{ secrets.CYPRESS_TEST_PASSWORD }}
-        WAIT_ON_TIMEOUT: 300000
-        DEBUG: 'wait-on*' # Tetap aktifkan untuk logging verbose
+        WAIT_ON_TIMEOUT: "300000" # String untuk env var, wait-on akan parse
+        # CI: true # Tidak diset di sini agar start:ci-e2e di package.json yang CI=false efektif
+      run: |
+        echo "Starting server for E2E tests..."
+        npm run start:ci-e2e & # Jalankan server di background
+        SERVER_PID=$!
+        echo "Server PID: $SERVER_PID. Waiting for server to be ready..."
+        # Gunakan npx untuk menjalankan wait-on dari node_modules jika tidak terinstal global
+        # -t untuk timeout, -i untuk interval, -v untuk verbose
+        npx wait-on http://localhost:3000 -t $WAIT_ON_TIMEOUT -i 10000 -v
+        echo "Server is ready. Running Cypress tests..."
+        npm run cypress:run
+        echo "E2E tests finished. Killing server PID $SERVER_PID..."
+        kill $SERVER_PID || true # '|| true' agar tidak error jika server sudah mati
 
     - name: Build application (opsional, untuk verifikasi build)
       run: npm run build
