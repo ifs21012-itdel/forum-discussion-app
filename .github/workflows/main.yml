@@ -31,13 +31,13 @@ jobs:
       run: npm run lint
 
     - name: Run tests (Unit, Integration, E2E)
-      run: npm run ci:test # Ini akan menjalankan 'npm test && npm run e2e'
-                          # dan 'npm run e2e' sekarang memanggil 'start:ci-e2e'
+      run: npm run ci:test
       env:
         CYPRESS_VALID_EMAIL: ${{ secrets.CYPRESS_TEST_EMAIL }}
         CYPRESS_VALID_PASSWORD: ${{ secrets.CYPRESS_TEST_PASSWORD }}
-        WAIT_ON_TIMEOUT: 300000 # Tetap pertahankan timeout yang panjang
-        CI: true # Untuk npm test dan keseluruhan step, tapi start server akan CI=false
+        WAIT_ON_TIMEOUT: 300000
+        DEBUG: 'wait-on*' # Aktifkan logging verbose untuk wait-on
+        # CI: true # Dihapus dari sini karena start:ci-e2e sudah menangani CI=false untuk server
 
     - name: Build application (opsional, untuk verifikasi build)
       run: npm run build
