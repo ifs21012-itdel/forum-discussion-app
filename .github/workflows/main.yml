@@ -2,9 +2,9 @@ name: Forum App CI/CD
 
 on:
   push:
-    branches: [ "main", "master", "develop" ] # Sesuaikan dengan nama branch Anda
+    branches: [ "main", "master", "develop" ]
   pull_request:
-    branches: [ "main", "master" ]         # Sesuaikan dengan nama branch utama Anda
+    branches: [ "main", "master" ]
 
 jobs:
   build_and_test:
@@ -12,7 +12,7 @@ jobs:
 
     strategy:
       matrix:
-        node-version: [18.x] # Anda bisa menggunakan versi Node.js lain jika perlu
+        node-version: [18.x]
 
     steps:
     - name: Checkout repository
@@ -25,23 +25,26 @@ jobs:
         cache: 'npm'
 
     - name: Install dependencies
-      run: npm ci # Menggunakan npm ci untuk instalasi yang lebih cepat dan konsisten di CI
+      run: npm ci
 
     - name: Run linters
       run: npm run lint
 
     - name: Run tests (Unit, Integration, E2E)
-      run: npm run ci:test # Perintah ini akan menjalankan 'npm test && npm run e2e'
+      run: npm run ci:test
       env:
-        # Jika tes E2E Anda memerlukan variabel lingkungan, definisikan di sini
-        # atau lebih baik lagi, gunakan GitHub Secrets (lihat di bawah)
         CYPRESS_VALID_EMAIL: ${{ secrets.CYPRESS_TEST_EMAIL }}
         CYPRESS_VALID_PASSWORD: ${{ secrets.CYPRESS_TEST_PASSWORD }}
-        # Pastikan baseUrl di cypress.config.js adalah http://localhost:3000
-        # karena start-server-and-test akan menjalankan server di port tersebut
-        # CI: true # Beberapa library mungkin berperilaku berbeda jika CI=true
+        # Tingkatkan timeout untuk start-server-and-test (wait-on) menjadi 5 menit (300000 ms)
+        # Defaultnya mungkin terlalu pendek untuk lingkungan CI.
+        WAIT_ON_TIMEOUT: 300000
+        # Pastikan variabel ini tidak menyebabkan masalah dengan CRA build di CI untuk tes
+        CI: true # Beberapa skrip CRA mungkin memerlukan ini di CI, tapi bisa juga menyebabkan warning.
+                # Jika 'npm run start' dalam 'npm run e2e' bermasalah karena CI=true,
+                # Anda mungkin perlu cara lain untuk men-set timeout atau men-override 'CI' khusus untuk 'npm start'.
+                # Namun, start-server-and-test biasanya tidak terpengaruh oleh CI=true untuk servernya.
 
     - name: Build application (opsional, untuk verifikasi build)
       run: npm run build
       env:
-        CI: false # Jika build Anda gagal karena warning yang dianggap error oleh CRA
+        CI: false # Seringkali diperlukan untuk build CRA di CI agar warning tidak dianggap error
