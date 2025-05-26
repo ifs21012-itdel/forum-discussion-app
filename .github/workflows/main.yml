@@ -36,8 +36,7 @@ jobs:
         CYPRESS_VALID_EMAIL: ${{ secrets.CYPRESS_TEST_EMAIL }}
         CYPRESS_VALID_PASSWORD: ${{ secrets.CYPRESS_TEST_PASSWORD }}
         WAIT_ON_TIMEOUT: 300000
-        DEBUG: 'wait-on*' # Aktifkan logging verbose untuk wait-on
-        # CI: true # Dihapus dari sini karena start:ci-e2e sudah menangani CI=false untuk server
+        DEBUG: 'wait-on*' # Tetap aktifkan untuk logging verbose
 
     - name: Build application (opsional, untuk verifikasi build)
       run: npm run build
