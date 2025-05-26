@@ -2,21 +2,18 @@
   "name": "forum-discussion-app",
   "version": "1.0.0",
   "private": true,
-
-
-"scripts": {
-  "start": "react-scripts start",
-  "start:ci-e2e": "BROWSER=none CI=false react-scripts start", 
-  "build": "react-scripts build",
-  "test": "react-scripts test --watchAll=false",
-  "eject": "react-scripts eject",
-  "lint": "eslint \"src/**/*.{js,jsx}\"",
-  "cypress:open": "cypress open",
-
-  "e2e": "start-server-and-test start:ci-e2e http://localhost:3000 cypress:run",
-  "ci:test": "npm test && npm run e2e"
-},
-
+  "scripts": {
+    "start": "react-scripts start",
+    "start:ci-e2e": "BROWSER=none CI=false HOST=127.0.0.1 react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test --watchAll=false",
+    "eject": "react-scripts eject",
+    "lint": "eslint \"src/**/*.{js,jsx}\"",
+    "cypress:open": "cypress open",
+    "cypress:run": "cypress run",
+    "e2e": "start-server-and-test start:ci-e2e http://127.0.0.1:3000 cypress:run",
+    "ci:test": "npm test && npm run e2e"
+  },
   "dependencies": {
     "@reduxjs/toolkit": "^1.9.1",
     "axios": "^1.9.0",
