@@ -10,7 +10,7 @@
     "lint": "eslint \"src/**/*.{js,jsx}\"",
     "cypress:open": "cypress open",
     "cypress:run": "cypress run",
-    "e2e": "start-server-and-test start http://localhost:3000 cypress:run",
+    "e2e": "start-server-and-test start http-get://localhost:3000/manifest.json cypress:run",
     "ci:test": "npm test && npm run e2e"
   },
   "dependencies": {
@@ -36,7 +36,7 @@
     "eslint-plugin-cypress": "^3.4.0",
     "eslint-plugin-jest-dom": "^5.4.0",
     "eslint-plugin-testing-library": "^6.2.2",
-    "redux-mock-store": "^1.5.4",  
+    "redux-mock-store": "^1.5.4",
     "start-server-and-test": "^2.0.4"
   },
   "eslintConfig": {
