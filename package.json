@@ -3,15 +3,20 @@
   "version": "1.0.0",
   "private": true,
 
+
 "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
-    "lint": "eslint \"src/**/*.{js,jsx}\"",
-    "test": "react-scripts test --transformIgnorePatterns \"node_modules/(?!axios)/\"",
-    "e2e": "cypress open",
-    "e2e:ci": "start-server-and-test start-for-e2e http://localhost:3000 \"cypress run\"",
-    "start-for-e2e": "serve -s build -l 3000"
-  },
+  "start": "react-scripts start",
+  "start:ci-e2e": "BROWSER=none CI=false react-scripts start", 
+  "build": "react-scripts build",
+  "test": "react-scripts test --watchAll=false",
+  "eject": "react-scripts eject",
+  "lint": "eslint \"src/**/*.{js,jsx}\"",
+  "cypress:open": "cypress open",
+
+  "e2e": "start-server-and-test start:ci-e2e http://localhost:3000 cypress:run",
+  "ci:test": "npm test && npm run e2e"
+},
+
   "dependencies": {
     "@reduxjs/toolkit": "^1.9.1",
     "axios": "^1.9.0",
