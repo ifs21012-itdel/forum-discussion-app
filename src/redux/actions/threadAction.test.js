@@ -78,7 +78,7 @@ describe('threadActions thunks', () => {
 
       // INI BAGIAN YANG SENGAJA DIBUAT GAGAL
       expect(actions[1]).toEqual({
-        type: 'FETCH_THREADS_SUCCESS_TAPI_SENGAJA_SALAH_UNTUK_DEMO_CI', // Tipe aksi yang salah
+        type: 'FETCH_THREADS_SUCCESS_TAPI_SENGAJA_SALAH_UNTUK_DEMO_CI_nya', // Tipe aksi yang salah
         payload: 'payload_salah', // Payload yang salah
       });
       // Seharusnya:
