@@ -51,7 +51,7 @@ describe('threadActions thunks', () => {
   });
 
   describe('fetchThreads thunk', () => {
-    it('should dispatch FETCH_THREADS_REQUEST then a deliberately WRONG action on successful fetch to make CI fail', async () => {
+    it('should dispatch FETCH_THREADS_REQUEST then FETCH_THREADS_SUCCESS on successful fetch', async () => {
       const threadsResponse = {
         data: {
           threads: [
@@ -76,22 +76,17 @@ describe('threadActions thunks', () => {
       expect(api.getThreadDetail).toHaveBeenCalledWith('thread-1');
       expect(api.getThreadDetail).toHaveBeenCalledWith('thread-2');
 
-      // INI BAGIAN YANG SENGAJA DIBUAT GAGAL
+      // PASTIKAN BAGIAN INI KEMBALI KE KONDISI YANG BENAR
       expect(actions[1]).toEqual({
-        type: 'FETCH_THREADS_SUCCESS_TAPI_SENGAJA_SALAH_UNTUK_DEMO_CI_nya', // Tipe aksi yang salah
-        payload: 'payload_salah', // Payload yang salah
+        type: FETCH_THREADS_SUCCESS,
+        payload: [detailThread1.data.detailThread, detailThread2.data.detailThread],
       });
-      // Seharusnya:
-      // expect(actions[1]).toEqual({
-      //   type: FETCH_THREADS_SUCCESS,
-      //   payload: [detailThread1.data.detailThread, detailThread2.data.detailThread],
-      // });
     });
 
     it('should dispatch FETCH_THREADS_REQUEST then FETCH_THREADS_FAILURE on failed fetch', async () => {
       const errorMessage = 'Failed to fetch threads';
       api.getAllThreads.mockRejectedValue(new Error(errorMessage));
-      console.error = jest.fn();
+      console.error = jest.fn(); // Mock console.error untuk mencegah log di output tes
 
       await store.dispatch(fetchThreads());
       const actions = store.getActions();
@@ -99,7 +94,7 @@ describe('threadActions thunks', () => {
       expect(actions[0]).toEqual({ type: FETCH_THREADS_REQUEST });
       expect(actions[1]).toEqual({ type: FETCH_THREADS_FAILURE, payload: errorMessage });
       expect(console.error).toHaveBeenCalledWith('Gagal mengambil daftar thread dengan detail pemilik:', expect.any(Error));
-      console.error.mockRestore();
+      console.error.mockRestore(); // Kembalikan implementasi asli console.error
     });
   });
 
