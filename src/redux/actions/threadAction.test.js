@@ -94,7 +94,7 @@ describe('threadActions thunks', () => {
       expect(actions[0]).toEqual({ type: FETCH_THREADS_REQUEST });
       expect(actions[1]).toEqual({ type: FETCH_THREADS_FAILURE, payload: errorMessage });
       expect(console.error).toHaveBeenCalledWith('Gagal mengambil daftar thread dengan detail pemilik:', expect.any(Error));
-      console.error.mockRestore(); // Kembalikan implementasi asli console.error
+      console.error.mockRestore(); // Kembalikan implementasi asli console.error Fixed
     });
   });
 
