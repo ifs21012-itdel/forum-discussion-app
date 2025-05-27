@@ -29,7 +29,7 @@ describe('threadActions thunks', () => {
   let store;
 
   beforeEach(() => {
-    store = mockStore({ auth: { token: 'fake-token' } });
+    store = mockStore({ auth: { token: 'fake-token' } }); // Memberikan state awal dengan token
     mockNavigate.mockClear();
     global.alert = jest.fn();
     jest.clearAllMocks();
@@ -51,7 +51,7 @@ describe('threadActions thunks', () => {
   });
 
   describe('fetchThreads thunk', () => {
-    it('should dispatch FETCH_THREADS_REQUEST then a deliberately WRONG action on successful fetch to make CI fail', async () => {
+    it('should dispatch FETCH_THREADS_REQUEST then FETCH_THREADS_SUCCESS on successful fetch', async () => {
       const threadsResponse = {
         data: {
           threads: [
@@ -75,17 +75,10 @@ describe('threadActions thunks', () => {
       expect(api.getAllThreads).toHaveBeenCalledWith('fake-token');
       expect(api.getThreadDetail).toHaveBeenCalledWith('thread-1');
       expect(api.getThreadDetail).toHaveBeenCalledWith('thread-2');
-
-      // INI BAGIAN YANG SENGAJA DIBUAT GAGAL
       expect(actions[1]).toEqual({
-        type: 'FETCH_THREADS_SUCCESS_TAPI_SENGAJA_SALAH_UNTUK_DEMO_CI', // Tipe aksi yang salah
-        payload: 'payload_salah', // Payload yang salah
+        type: FETCH_THREADS_SUCCESS,
+        payload: [detailThread1.data.detailThread, detailThread2.data.detailThread],
       });
-      // Seharusnya:
-      // expect(actions[1]).toEqual({
-      //   type: FETCH_THREADS_SUCCESS,
-      //   payload: [detailThread1.data.detailThread, detailThread2.data.detailThread],
-      // });
     });
 
     it('should dispatch FETCH_THREADS_REQUEST then FETCH_THREADS_FAILURE on failed fetch', async () => {
@@ -142,21 +135,25 @@ describe('threadActions thunks', () => {
       const mockComment = { id: 'comment-1', content };
       const mockThreadDetailAfterComment = { id: threadId, title: 'Test Thread', comments: [mockComment] };
 
+      // Inisialisasi store dengan token yang benar untuk tes ini
       store = mockStore({ auth: { token } });
 
       api.addComment.mockResolvedValue({ data: { comment: mockComment } });
+      // Pastikan mock ini tersedia untuk panggilan getThreadDetail di dalam fetchThreadDetail
       api.getThreadDetail.mockResolvedValue({ data: { detailThread: mockThreadDetailAfterComment } });
 
+      // Menunggu createComment selesai, yang seharusnya juga menunggu fetchThreadDetail selesai
       await store.dispatch(createComment(threadId, content, token));
 
       const actions = store.getActions();
 
+      // Verifikasi
       expect(api.addComment).toHaveBeenCalledWith(threadId, content, token);
-      expect(actions.length).toBe(3);
+      expect(actions.length).toBe(3); // Harapannya 3 aksi
       expect(actions[0]).toEqual({ type: CREATE_COMMENT_SUCCESS, payload: mockComment });
       expect(actions[1]).toEqual({ type: FETCH_THREAD_DETAIL_REQUEST });
       expect(actions[2]).toEqual({ type: FETCH_THREAD_DETAIL_SUCCESS, payload: mockThreadDetailAfterComment });
-      expect(api.getThreadDetail).toHaveBeenCalledWith(threadId);
+      expect(api.getThreadDetail).toHaveBeenCalledWith(threadId); // Pastikan refetch terjadi
     });
 
     it('should dispatch CREATE_COMMENT_FAILURE and alert on failed comment creation', async () => {
